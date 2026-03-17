@@ -178,7 +178,7 @@ function parseBusboy(req) {
     // At this point all "file" events and their streams have completed.
     bb.on("close", () => {
       if (fileTooLarge) {
-        reject(new RangeError(`FILE_TOO_LARGE:${MAX_INPUT_MB}`));
+        reject(new RangeError(`FILE_TOO_LARGE`));
         return;
       }
       if (!fileBuffer) {
@@ -223,7 +223,7 @@ export default async function handler(req, res) {
         parseErr.message.startsWith("FILE_TOO_LARGE")
       ) {
         return res.status(413).json({
-          error: `File too large. Maximum allowed size is ${MAX_INPUT_MB} MB.`,
+          error: `File too large. Maximum allowed size is 10 MB.`,
         });
       }
       if (
