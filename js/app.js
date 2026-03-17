@@ -26,7 +26,8 @@ const db = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 //   "https://abc123.public.blob.vercel-storage.com/avatars/default.webp"
 // Until then, the local fallback is used so the app still works in
 // development without a Blob token.
-const DEFAULT_AVATAR = "resources/images/default.png";
+const DEFAULT_AVATAR =
+  "https://6fkrqtkwbcnqsois.public.blob.vercel-storage.com/avatars/default.webp";
  
 // currentProfileId holds the UUID of the profile currently shown in
 // the centre panel. It starts as null (nothing selected). Most action
