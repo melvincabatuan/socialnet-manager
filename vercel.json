@@ -1,8 +1,5 @@
 {
-  "functions": {
-    "api/upload-avatar.js": {
-      "memory": 512,
-      "maxDuration": 30
-    }
-  }
+  "buildCommand": null,
+  "outputDirectory": ".",
+  "installCommand": "npm install"
 }
