@@ -1,6 +1,6 @@
 // api/upload-avatar.js
 // ================================================================
-// Vercel Serverless Function - Avatar Upload with Busboy + Sharp
+// Vercel Serverless Function — Avatar Upload with Busboy + Sharp
 //
 // WHY THIS FILE EXISTS ON THE SERVER (NOT IN THE BROWSER)
 // ─────────────────────────────────────────────────────────
@@ -8,7 +8,7 @@
 //    anyone could open DevTools, copy it, and upload unlimited files
 //    to your Vercel Blob storage at your expense.
 // 2. sharp uses native C++ bindings (libvips). Browsers cannot run
-//    native binaries - this code must run on a Node.js server.
+//    native binaries — this code must run on a Node.js server.
 // 3. Server-side validation is the only place you can truly trust
 //    file content. A browser could lie about MIME type.
 //
@@ -82,7 +82,7 @@ const ALLOWED_TYPES = new Set([
 export const config = {
   api: {
     bodyParser: false,
-    sizeLimit: process.env.MAX_UPLOAD_SIZE || `10mb`,
+    sizeLimit: "10mb",
   },
 };
 
