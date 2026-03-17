@@ -6,8 +6,12 @@
 
 /* ── Variables ───────────────────────────────────────────────── */
 :root {
-  --font-heading: 'Source Serif 4', Georgia, serif;
-  --font-body:    'DM Sans', system-ui, sans-serif;
+  /* Sans-serif for headings (clean and simple) */
+  /* Sans-serif for headings (clean and consistent UI look) */
+  --font-heading: "Segoe UI", system-ui, -apple-system, "Inter", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* Body font (modern, readable, with proper fallbacks) */
+  --font-body: "DM Sans", system-ui, -apple-system, "Segoe UI", "Inter", Roboto, "Helvetica Neue", Arial, sans-serif;
 
   --clr-header-bg:        #1e3a6e;
   --clr-header-bg2:       #2d5299;
@@ -56,14 +60,6 @@
 }
 
 
-/* ── Root sizing ─────────────────────────────────────────────────
-   FIX 1 of 3: html AND body must both have height: 100%.
-   The scroll chain requires a concrete pixel height at the very
-   top. html: 100% = viewport height in pixels. body: 100%
-   inherits that concrete value. Without both, every descendant's
-   flex: 1 resolves against an infinitely tall document and
-   overflow-y: auto never fires.
-   ─────────────────────────────────────────────────────────── */
 html {
   height: 100%;
 }
@@ -105,12 +101,6 @@ body {
 }
 
 
-/* ── App wrapper ─────────────────────────────────────────────────
-   FIX 2 of 3: explicit calc() height instead of flex: 1.
-   flex: 1 alone is ambiguous when siblings also use flex: 1.
-   calc(100% - var(--header-h)) gives a concrete pixel height that
-   is unambiguous and propagates correctly down the chain.
-   ─────────────────────────────────────────────────────────── */
 #app-wrapper {
   height:         calc(100% - var(--header-h));
   flex-shrink:    0;
@@ -121,11 +111,6 @@ body {
 }
 
 
-/* ── Main content area ───────────────────────────────────────────
-   FIX 3 of 3: explicit calc() height subtracting the status bar.
-   This gives #main-content a concrete pixel height that the
-   Bootstrap row, columns, and panels can all measure against.
-   ─────────────────────────────────────────────────────────── */
 #main-content {
   height:      calc(100% - var(--statusbar-h));
   flex-shrink: 0;
