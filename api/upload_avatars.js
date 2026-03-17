@@ -82,7 +82,7 @@ const ALLOWED_TYPES = new Set([
 export const config = {
   api: {
     bodyParser: false,
-    sizeLimit: `${MAX_INPUT_MB}mb`,
+    sizeLimit: process.env.MAX_UPLOAD_SIZE || `10mb`,
   },
 };
 
