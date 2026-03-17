@@ -1,4 +1,4 @@
-// api/upload-avatar.js
+// api/upload-avatar.mjs
 // ================================================================
 // Vercel Serverless Function — Avatar Upload with Busboy + Sharp
 //
