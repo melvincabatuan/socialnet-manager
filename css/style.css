@@ -1,0 +1,610 @@
+/* css/style.css */
+/* ============================================================
+   SocialNet Manager - Visual Design
+   ============================================================ */
+
+
+/* ── Variables ───────────────────────────────────────────────── */
+:root {
+  --font-heading: 'Source Serif 4', Georgia, serif;
+  --font-body:    'DM Sans', system-ui, sans-serif;
+
+  --clr-header-bg:        #1e3a6e;
+  --clr-header-bg2:       #2d5299;
+  --clr-header-text:      #ffffff;
+
+  --clr-page-bg:          #dde3ec;
+  --clr-panel-bg:         #f7f8fa;
+  --clr-panel-border:     #c8cdd8;
+  --clr-panel-shadow:     rgba(30, 58, 110, 0.10);
+
+  --clr-blue:             #2456b4;
+  --clr-blue-hover:       #1a3f8c;
+  --clr-red:              #b83030;
+  --clr-red-hover:        #922424;
+  --clr-green:            #1e8c4a;
+  --clr-green-hover:      #166638;
+  --clr-orange:           #c46010;
+  --clr-orange-hover:     #9e4d0c;
+  --clr-gray:             #4a5568;
+  --clr-gray-hover:       #2d3748;
+
+  --clr-textbox-bg:       #ffffff;
+  --clr-textbox-bdr:      #c0c7d4;
+  --clr-list-active:      #2456b4;
+  --clr-list-active-text: #ffffff;
+
+  --clr-status-bg:        #1a2e55;
+  --clr-status-text:      rgba(255, 255, 255, 0.88);
+
+  --clr-label:            #3a4560;
+  --clr-heading:          #111827;
+  --clr-subheading:       #1e3a6e;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  --header-h:    52px;
+  --statusbar-h: 36px;
+}
+
+
+/* ── Box-sizing reset ────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+
+/* ── Root sizing ─────────────────────────────────────────────────
+   FIX 1 of 3: html AND body must both have height: 100%.
+   The scroll chain requires a concrete pixel height at the very
+   top. html: 100% = viewport height in pixels. body: 100%
+   inherits that concrete value. Without both, every descendant's
+   flex: 1 resolves against an infinitely tall document and
+   overflow-y: auto never fires.
+   ─────────────────────────────────────────────────────────── */
+html {
+  height: 100%;
+}
+
+body {
+  height:         100%;
+  font-family:    var(--font-body);
+  background:     var(--clr-page-bg);
+  color:          var(--clr-heading);
+  margin:         0;
+  display:        flex;
+  flex-direction: column;
+  overflow:       hidden;
+}
+
+
+/* ── Application header ──────────────────────────────────────── */
+#app-header {
+  height:          var(--header-h);
+  flex-shrink:     0;
+  background:      linear-gradient(135deg, var(--clr-header-bg), var(--clr-header-bg2));
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  padding:         0 1.5rem;
+  box-shadow:      0 3px 10px rgba(0, 0, 0, 0.30);
+  position:        relative;
+  z-index:         10;
+}
+
+#app-title {
+  font-family:    var(--font-heading);
+  font-size:      clamp(1.1rem, 2.5vw, 1.45rem);
+  font-weight:    700;
+  color:          var(--clr-header-text);
+  margin:         0;
+  letter-spacing: 0.03em;
+  text-shadow:    0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+
+/* ── App wrapper ─────────────────────────────────────────────────
+   FIX 2 of 3: explicit calc() height instead of flex: 1.
+   flex: 1 alone is ambiguous when siblings also use flex: 1.
+   calc(100% - var(--header-h)) gives a concrete pixel height that
+   is unambiguous and propagates correctly down the chain.
+   ─────────────────────────────────────────────────────────── */
+#app-wrapper {
+  height:         calc(100% - var(--header-h));
+  flex-shrink:    0;
+  display:        flex;
+  flex-direction: column;
+  min-height:     0;
+  overflow:       hidden;
+}
+
+
+/* ── Main content area ───────────────────────────────────────────
+   FIX 3 of 3: explicit calc() height subtracting the status bar.
+   This gives #main-content a concrete pixel height that the
+   Bootstrap row, columns, and panels can all measure against.
+   ─────────────────────────────────────────────────────────── */
+#main-content {
+  height:      calc(100% - var(--statusbar-h));
+  flex-shrink: 0;
+  min-height:  0;
+  overflow:    hidden;
+  padding:     0.75rem !important;
+}
+
+
+/* ── Bootstrap row ───────────────────────────────────────────── */
+#main-content > .row {
+  height:     100%;
+  min-height: 0;
+}
+
+
+/* ── Bootstrap columns ───────────────────────────────────────── */
+#main-content > .row > [class*="col-"] {
+  display:        flex;
+  flex-direction: column;
+  /* height: 100% anchors column to the row's concrete height */
+  height:         100%;
+  min-height:     0;
+}
+
+
+/* ── Panel cards ─────────────────────────────────────────────── */
+.sn-panel {
+  background:     var(--clr-panel-bg);
+  border-radius:  var(--radius-lg);
+  border:         1px solid var(--clr-panel-border);
+  padding:        1rem 1.1rem;
+  display:        flex;
+  flex-direction: column;
+  flex:           1;
+  min-height:     0;
+  overflow:       hidden;
+  box-shadow:     0 2px 12px var(--clr-panel-shadow),
+                  0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.sn-panel--bordered {
+  border-color: #a8b4c8;
+  box-shadow:   0 4px 18px rgba(30, 58, 110, 0.13),
+                0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* Right panel scrolls internally so its tall form fields do not
+   push the column taller than the viewport, which would break
+   the left panel's scroll boundary. */
+.sn-panel.right-panel {
+  overflow-y:      auto;
+  scrollbar-width: thin;
+  scrollbar-color: #b0bac8 #f0f2f6;
+}
+
+.sn-panel.right-panel::-webkit-scrollbar             { width: 5px; }
+.sn-panel.right-panel::-webkit-scrollbar-track       { background: #f0f2f6; border-radius: 3px; }
+.sn-panel.right-panel::-webkit-scrollbar-thumb       { background: #b0bac8; border-radius: 3px; }
+.sn-panel.right-panel::-webkit-scrollbar-thumb:hover { background: #8896a8; }
+
+
+/* ── Panel headings ──────────────────────────────────────────── */
+.panel-heading {
+  font-family:    var(--font-body);
+  font-size:      0.82rem;
+  font-weight:    700;
+  color:          var(--clr-subheading);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom:  0.65rem;
+  padding-bottom: 0.5rem;
+  border-bottom:  2px solid #d0d8e8;
+  flex-shrink:    0;
+}
+
+
+/* ── Field labels ────────────────────────────────────────────── */
+.field-label {
+  font-size:     0.78rem;
+  font-weight:   600;
+  color:         var(--clr-label);
+  margin-bottom: 0.25rem;
+  margin-top:    0;
+  flex-shrink:   0;
+}
+
+
+/* ── Text inputs ─────────────────────────────────────────────── */
+.sn-input {
+  font-family:   var(--font-body);
+  font-size:     0.85rem;
+  background:    #ffffff;
+  border:        1px solid var(--clr-panel-border);
+  border-radius: var(--radius-sm);
+  padding:       0.4rem 0.65rem;
+  color:         #1a202c;
+  width:         100%;
+  transition:    border-color 0.15s, box-shadow 0.15s;
+  flex-shrink:   0;
+}
+
+.sn-input:focus {
+  outline:      none;
+  border-color: var(--clr-blue);
+  box-shadow:   0 0 0 3px rgba(36, 86, 180, 0.18);
+}
+
+.sn-input::placeholder { color: #9aa5b8; }
+
+
+/* ── Button rows ─────────────────────────────────────────────── */
+.btn-row {
+  display:     flex;
+  gap:         0.4rem;
+  flex-shrink: 0;
+}
+
+
+/* ── Buttons ─────────────────────────────────────────────────── */
+.btn {
+  font-family:    var(--font-body);
+  font-size:      0.82rem;
+  font-weight:    600;
+  border:         none;
+  border-radius:  var(--radius-sm);
+  padding:        0.42rem 0.85rem;
+  cursor:         pointer;
+  white-space:    nowrap;
+  letter-spacing: 0.01em;
+  transition:     background 0.15s, transform 0.1s, box-shadow 0.15s;
+}
+
+.btn:active        { transform: scale(0.97); }
+.btn:focus-visible { outline: 2px solid var(--clr-blue); outline-offset: 2px; }
+
+.sn-btn-blue         { background: var(--clr-blue);         color: #fff; box-shadow: 0 1px 4px rgba(36,86,180,0.25); }
+.sn-btn-blue:hover   { background: var(--clr-blue-hover);   color: #fff; }
+.sn-btn-red          { background: var(--clr-red);          color: #fff; box-shadow: 0 1px 4px rgba(184,48,48,0.25); }
+.sn-btn-red:hover    { background: var(--clr-red-hover);    color: #fff; }
+.sn-btn-green        { background: var(--clr-green);        color: #fff; box-shadow: 0 1px 4px rgba(30,140,74,0.25); }
+.sn-btn-green:hover  { background: var(--clr-green-hover);  color: #fff; }
+.sn-btn-orange       { background: var(--clr-orange);       color: #fff; box-shadow: 0 1px 4px rgba(196,96,16,0.25); }
+.sn-btn-orange:hover { background: var(--clr-orange-hover); color: #fff; }
+.sn-btn-gray         { background: var(--clr-gray);         color: #fff; box-shadow: 0 1px 4px rgba(74,85,104,0.25); }
+.sn-btn-gray:hover   { background: var(--clr-gray-hover);   color: #fff; }
+
+
+/* ── Profile list box ────────────────────────────────────────────
+
+   All three properties below must be present together:
+
+   flex: 1        Grows to fill remaining panel height after
+                  the heading, input, and button rows above it.
+
+   min-height: 0  Overrides the browser default of min-height: auto,
+                  which would otherwise let the box expand to fit
+                  all its content. Setting 0 gives the browser
+                  permission to clip the box at its flex height.
+
+   overflow-y: auto  Shows a scrollbar only when content exceeds
+                     the clipped height. Has no effect without
+                     the clip boundary that min-height: 0 creates.
+
+   ─────────────────────────────────────────────────────────── */
+.profile-list-box {
+  flex:            1;
+  min-height:      0;
+  overflow-y:      auto;
+  border:          1px solid var(--clr-panel-border);
+  border-radius:   var(--radius-sm);
+  background:      #ffffff;
+  scrollbar-width: thin;
+  scrollbar-color: #b0bac8 #f0f2f6;
+}
+
+.profile-list-box::-webkit-scrollbar             { width: 5px; }
+.profile-list-box::-webkit-scrollbar-track       { background: #f0f2f6; border-radius: 3px; }
+.profile-list-box::-webkit-scrollbar-thumb       { background: #b0bac8; border-radius: 3px; }
+.profile-list-box::-webkit-scrollbar-thumb:hover { background: #8896a8; }
+
+
+/* ── Individual profile row ──────────────────────────────────── */
+.profile-list-box .profile-item {
+  display:       flex;
+  align-items:   center;
+  gap:           0.6rem;
+  padding:       0.45rem 0.65rem;
+  cursor:        pointer;
+  font-size:     0.84rem;
+  font-weight:   500;
+  color:         #1a202c;
+  border-bottom: 1px solid #eaeef4;
+  transition:    background 0.12s;
+  overflow:      hidden;
+  white-space:   nowrap;
+  text-overflow: ellipsis;
+}
+
+.profile-list-box .profile-item:last-child { border-bottom: none; }
+.profile-list-box .profile-item:hover      { background: #dce8f6; color: var(--clr-blue); }
+.profile-list-box .profile-item.active     { background: var(--clr-list-active); color: var(--clr-list-active-text); font-weight: 600; }
+
+
+/* ── List thumbnail ──────────────────────────────────────────── */
+.profile-item .list-thumb {
+  width:         38px;
+  height:        38px;
+  object-fit:    cover;
+  border-radius: 50%;
+  flex-shrink:   0;
+  border:        2px solid #c8d4e8;
+  background:    #dde3ec;
+}
+
+.profile-list-box .profile-item.active .list-thumb {
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+
+/* ── Centre panel: profile hero ──────────────────────────────── */
+.profile-hero {
+  display:     flex;
+  align-items: center;
+  gap:         1rem;
+  padding:     0.5rem 0;
+  flex-shrink: 0;
+}
+
+.profile-thumb {
+  width:         96px;
+  height:        96px;
+  object-fit:    cover;
+  border-radius: 50%;
+  border:        3px solid var(--clr-blue);
+  background:    #dde3ec;
+  flex-shrink:   0;
+  box-shadow:    0 2px 10px rgba(36, 86, 180, 0.20);
+  transition:    transform 0.2s, box-shadow 0.2s;
+}
+
+.profile-thumb:hover {
+  transform:  scale(1.05);
+  box-shadow: 0 4px 16px rgba(36, 86, 180, 0.30);
+}
+
+.profile-hero-name {
+  font-family: var(--font-heading);
+  font-size:   clamp(1.05rem, 2.5vw, 1.4rem);
+  font-weight: 700;
+  color:       var(--clr-heading);
+  margin:      0;
+  line-height: 1.25;
+}
+
+
+/* ── Divider ─────────────────────────────────────────────────── */
+.sn-divider {
+  border:      none;
+  border-top:  1px solid var(--clr-panel-border);
+  margin:      0.5rem 0 0.65rem;
+  flex-shrink: 0;
+}
+
+
+/* ── Read-only display boxes ─────────────────────────────────── */
+.sn-textbox {
+  background:    var(--clr-textbox-bg);
+  border:        1px solid var(--clr-textbox-bdr);
+  border-radius: var(--radius-sm);
+  padding:       0.5rem 0.75rem;
+  font-size:     0.875rem;
+  color:         #2d3748;
+  min-height:    2.4rem;
+  line-height:   1.55;
+  flex-shrink:   0;
+}
+
+/* Friends list box — same three-property pattern as .profile-list-box.
+   flex-shrink: 1 overrides the flex-shrink: 0 inherited from .sn-textbox
+   so this box can participate in flex growth. */
+.sn-textbox--tall {
+  flex-shrink: 1;
+  flex:        1;
+  min-height:  0;
+  overflow-y:  auto;
+  scrollbar-width: thin;
+  scrollbar-color: #b0bac8 #f0f2f6;
+}
+
+.sn-textbox--tall::-webkit-scrollbar             { width: 5px; }
+.sn-textbox--tall::-webkit-scrollbar-track       { background: #f0f2f6; border-radius: 3px; }
+.sn-textbox--tall::-webkit-scrollbar-thumb       { background: #b0bac8; border-radius: 3px; }
+.sn-textbox--tall::-webkit-scrollbar-thumb:hover { background: #8896a8; }
+
+
+/* ── Friend entries ──────────────────────────────────────────── */
+.sn-textbox .friend-entry {
+  padding:       0.2rem 0;
+  border-bottom: 1px solid #eef0f4;
+  font-size:     0.85rem;
+  color:         #2d3748;
+}
+
+.sn-textbox .friend-entry:last-child { border-bottom: none; }
+
+
+/* ── Status bar ──────────────────────────────────────────────── */
+#status-bar {
+  height:         var(--statusbar-h);
+  flex-shrink:    0;
+  background:     var(--clr-status-bg);
+  font-size:      0.82rem;
+  font-style:     italic;
+  display:        flex;
+  align-items:    center;
+  padding:        0 1.25rem;
+  color:          var(--clr-status-text);
+  letter-spacing: 0.01em;
+  box-shadow:     inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+
+/* ── Empty state ─────────────────────────────────────────────── */
+.empty-state {
+  color:      #9aa5b8;
+  font-style: italic;
+  font-size:  0.8rem;
+  padding:    0.5rem 0.65rem;
+}
+
+
+/* ── Exit button: pinned to panel bottom ─────────────────────── */
+#btn-exit {
+  margin-top:  auto;
+  flex-shrink: 0;
+}
+
+
+/* ================================================================
+   MOBILE  (767px and below)
+   Overrides the desktop height-locked layout with a normal
+   scrolling document. Each rule below targets something set
+   above and explicitly resets it for narrow screens.
+   ================================================================ */
+@media (max-width: 767.98px) {
+
+  /* Re-enable normal page scrolling */
+  html, body {
+    height:   auto;
+    overflow: auto;
+  }
+
+  /* Remove all fixed-height constraints */
+  #app-wrapper,
+  #main-content {
+    height:   auto;
+    overflow: visible;
+  }
+
+  #main-content > .row {
+    height:     auto;
+    min-height: 0;
+  }
+
+  /* Columns revert to normal block flow */
+  #main-content > .row > [class*="col-"] {
+    display: block;
+    height:  auto;
+  }
+
+  /* Panels size to content */
+  .sn-panel {
+    height:        auto !important;
+    min-height:    0;
+    overflow:      visible;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Right panel reverts to normal overflow on mobile */
+  .sn-panel.right-panel {
+    overflow-y: visible;
+  }
+
+  /* Scrollable boxes get capped heights on mobile */
+  .profile-list-box {
+    flex:       none;
+    min-height: 120px;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .sn-textbox--tall {
+    flex:       none;
+    min-height: 80px;
+    max-height: 160px;
+    overflow-y: auto;
+  }
+
+  .profile-hero { flex-direction: column; align-items: flex-start; }
+  .btn-row      { flex-wrap: wrap; }
+}
+
+/* ── Upload progress bar ─────────────────────────────────────────
+   Shown while the image is being compressed and sent to Vercel Blob.
+   The bar animates infinitely because we do not receive byte-level
+   progress events from the Fetch API — it signals "busy" rather
+   than a real percentage.
+   ─────────────────────────────────────────────────────────── */
+.upload-progress {
+  display:        flex;
+  align-items:    center;
+  gap:            0.6rem;
+  background:     #e8eef8;
+  border:         1px solid var(--clr-panel-border);
+  border-radius:  var(--radius-sm);
+  padding:        0.4rem 0.65rem;
+  font-size:      0.78rem;
+  color:          var(--clr-label);
+  overflow:       hidden;  /* clip the sliding bar inside the container */
+}
+ 
+/* The animated sliding stripe */
+.upload-progress-bar {
+  width:            40px;   /* width of the visible stripe */
+  height:           6px;
+  border-radius:    3px;
+  background:       linear-gradient(
+                      90deg,
+                      transparent 0%,
+                      var(--clr-blue) 50%,
+                      transparent 100%
+                    );
+  flex-shrink:      0;
+  /* slide-across: defined below, runs forever */
+  animation:        slide-across 1.2s ease-in-out infinite;
+}
+ 
+/* The label text next to the bar */
+#upload-progress-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+ 
+/* Keyframe: move the bar from left-of-container to right-of-container */
+@keyframes slide-across {
+  0%   { transform: translateX(-60px); }
+  100% { transform: translateX(200px); }
+}
+ 
+ 
+/* ── File input styling ──────────────────────────────────────────
+   The native <input type="file"> inherits .sn-input but needs a
+   small height adjustment because the browser renders its own
+   "Choose File" button inside it.
+   ─────────────────────────────────────────────────────────── */
+input[type="file"].sn-input {
+  padding:     0.3rem 0.5rem;
+  cursor:      pointer;
+  line-height: 1.4;
+}
+ 
+/* Make the "Choose File" button match our button palette */
+input[type="file"].sn-input::file-selector-button {
+  font-family:   var(--font-body);
+  font-size:     0.78rem;
+  font-weight:   600;
+  background:    var(--clr-blue);
+  color:         #ffffff;
+  border:        none;
+  border-radius: var(--radius-sm);
+  padding:       0.25rem 0.6rem;
+  margin-right:  0.5rem;
+  cursor:        pointer;
+  transition:    background 0.15s;
+}
+ 
+input[type="file"].sn-input::file-selector-button:hover {
+  background: var(--clr-blue-hover);
+}

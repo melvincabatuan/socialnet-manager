@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SocialNet Manager</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+
+    <!-- Bootstrap 5.3 CSS via CDN -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+
+    <!-- Custom styles (must come AFTER Bootstrap CDN) -->
+    <link rel="stylesheet" href="css/style.css" />
+
+    <!-- Supabase JS client via CDN (must load before app.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  </head>
+  <body>
+
+    <!-- ===== APPLICATION TITLE HEADER ===== -->
+    <header id="app-header">
+      <h1 id="app-title">LBYCPG3 SocialNet App - Profile Manager</h1>
+    </header>
+
+    <!-- ===== MAIN THREE-COLUMN LAYOUT ===== -->
+    <div id="app-wrapper">
+      <main id="main-content" class="container-fluid flex-grow-1 py-3 px-3">
+        <div class="row g-3 h-100">
+
+          <!-- ===== LEFT PANEL: Profile Management ===== -->
+          <div class="col-12 col-md-3">
+            <div class="sn-panel h-100">
+              <h6 class="panel-heading">Profile Management</h6>
+
+              <p class="field-label">Add/Lookup Profile:</p>
+
+              <input type="text" id="input-name" class="form-control sn-input mb-2"
+                     placeholder="Enter profile name" />
+
+              <div class="btn-row mb-3">
+                <button id="btn-add"    class="btn sn-btn-blue">Add</button>
+                <button id="btn-lookup" class="btn sn-btn-blue">Lookup</button>
+                <button id="btn-delete" class="btn sn-btn-red">Delete</button>
+              </div>
+
+              <p class="field-label">All Profiles:</p>
+              <div id="profile-list" class="profile-list-box">
+                <!-- Populated dynamically by JavaScript -->
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== CENTRE PANEL: Profile Information ===== -->
+          <div class="col-12 col-md-5">
+            <div class="sn-panel sn-panel--bordered h-100">
+              <h6 class="panel-heading">Profile Information</h6>
+
+              <div class="profile-hero mb-3">
+                <!--
+                  Default src points to the Vercel Blob default avatar URL.
+                  app.js replaces this with profile.picture from Supabase,
+                  which is always a full https://... Vercel Blob URL after
+                  the SQL migration in the setup guide.
+                -->
+                <img id="profile-pic"
+                     src="resources/images/default.png"
+                     alt="Profile picture"
+                     class="profile-thumb" />
+                <h4 id="profile-name" class="profile-hero-name">No Profile Selected</h4>
+              </div>
+
+              <hr class="sn-divider" />
+
+              <p class="field-label">Current Status:</p>
+              <div id="profile-status" class="sn-textbox mb-3">&mdash;</div>
+
+              <p class="field-label">Favorite Quote:</p>
+              <div id="profile-quote" class="sn-textbox mb-3">&mdash;</div>
+
+              <p class="field-label">Friends:</p>
+              <div id="friends-list" class="sn-textbox sn-textbox--tall"></div>
+            </div>
+          </div>
+
+          <!-- ===== RIGHT PANEL: Edit Profile ===== -->
+          <div class="col-12 col-md-4">
+            <div class="sn-panel right-panel h-100">
+              <h6 class="panel-heading">Edit Profile</h6>
+
+              <!-- Change Status -->
+              <p class="field-label">Change Status:</p>
+              <input type="text" id="input-status" class="form-control sn-input mb-1"
+                     placeholder="Enter new status" />
+              <button id="btn-status" class="btn sn-btn-blue w-100 mb-3">Update Status</button>
+
+              <!-- Change Quote -->
+              <p class="field-label">Change Favorite Quote:</p>
+              <input type="text" id="input-quote" class="form-control sn-input mb-1"
+                     placeholder="Enter favorite quote" />
+              <button id="btn-quote" class="btn sn-btn-blue w-100 mb-3">Update Quote</button>
+
+              <!-- =====================================================
+                   Change Picture — two input modes
+                   =====================================================
+                   Mode A (Upload):
+                     The user picks a local image file with the file
+                     picker. app.js reads the file, sends it to
+                     /api/upload-avatar (our Vercel serverless function),
+                     which compresses it and stores it in Vercel Blob.
+                     The returned public URL is saved to Supabase.
+
+                   Mode B (URL):
+                     The user pastes a full https:// URL (e.g. from an
+                     existing Vercel Blob, Imgur, etc.). app.js saves
+                     that URL directly to Supabase without uploading.
+
+                   The two modes share the same "Update Picture" button.
+                   app.js checks which input has a value and uses that mode.
+                   If both have values, the file upload takes priority.
+                   ===================================================== -->
+              <p class="field-label">Change Picture:</p>
+
+              <!--
+                input-picture-file: native file picker.
+                accept="image/*" restricts the OS file browser to images.
+                The "Upload" label makes the mode obvious.
+              -->
+              <label for="input-picture-file" class="field-label mt-1">
+                Upload from device:
+              </label>
+              <input
+                type="file"
+                id="input-picture-file"
+                class="form-control sn-input mb-2"
+                accept="image/*"
+              />
+
+              <!--
+                input-picture-url: fallback for users who already have a
+                hosted image URL (e.g. a previous Vercel Blob link or any
+                public image address).
+              -->
+              <label for="input-picture-url" class="field-label">
+                Or paste an image URL:
+              </label>
+              <input
+                type="url"
+                id="input-picture-url"
+                class="form-control sn-input mb-1"
+                placeholder="https://example.com/image.webp"
+              />
+
+              <!--
+                upload-progress is shown/hidden by app.js while the file
+                is being uploaded and compressed. It gives the user
+                feedback that something is happening (compression +
+                network upload can take 1-3 seconds).
+              -->
+              <div id="upload-progress" class="upload-progress mb-2" hidden>
+                <div class="upload-progress-bar"></div>
+                <span id="upload-progress-label">Uploading...</span>
+              </div>
+
+              <button id="btn-picture" class="btn sn-btn-blue w-100 mb-3">
+                Update Picture
+              </button>
+
+              <!-- Manage Friends -->
+              <p class="field-label">Manage Friends:</p>
+              <input type="text" id="input-friend" class="form-control sn-input mb-2"
+                     placeholder="Enter friend's name" />
+              <div class="btn-row mb-3">
+                <button id="btn-add-friend"    class="btn sn-btn-green flex-grow-1">Add Friend</button>
+                <button id="btn-remove-friend" class="btn sn-btn-orange flex-grow-1">Remove</button>
+              </div>
+
+              <!-- Exit -->
+              <button id="btn-exit" class="btn sn-btn-gray w-100 mt-auto">Exit</button>
+            </div>
+          </div>
+
+        </div><!-- /.row -->
+      </main>
+
+      <!-- ===== STATUS BAR ===== -->
+      <footer id="status-bar">
+        <span id="status-message">Ready. Select a profile from the list.</span>
+      </footer>
+    </div><!-- /#app-wrapper -->
+
+    <!-- Bootstrap JS bundle via CDN -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- Application logic -->
+    <script src="js/app.js"></script>
+  </body>
+</html>

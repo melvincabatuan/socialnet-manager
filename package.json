@@ -1,0 +1,17 @@
+{
+  "name": "socialnet-manager",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "LBYCPG3 SocialNet Profile Manager",
+  "scripts": {
+    "upload-avatars": "node upload_avatars.js"
+  },
+  "dependencies": {
+    "@vercel/blob": "^2.3.1",
+    "busboy": "^1.6.0",
+    "sharp": "^0.34.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
