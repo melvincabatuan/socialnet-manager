@@ -460,54 +460,125 @@ async function uploadFileToBlob(file) {
     setStatus("Error: The selected file is not an image.", true);
     return;
   }
- 
+
   // Show the animated progress indicator in the right panel
   showUploadProgress("Compressing and uploading...");
   setStatus("Uploading image to Vercel Blob...");
- 
+
   try {
     // Build a FormData object — this is the multipart/form-data body
     // that /api/upload-avatar expects. The field name must be "file"
     // because that is what the server reads with form.get("file").
     const formData = new FormData();
     formData.append("file", file);
- 
+
     // POST to our Vercel serverless function.
     // The function runs on Vercel's servers and has access to the
     // BLOB_READ_WRITE_TOKEN environment variable — the browser never
     // sees that secret.
     const response = await fetch("/api/upload-avatar", {
       method: "POST",
-      body:   formData,
+      body: formData,
       // Do NOT set Content-Type manually. When body is a FormData
       // object, the browser sets Content-Type automatically and
       // includes the multipart boundary string (--abc123...) that
       // the server needs to parse the fields. Setting it manually
       // would omit the boundary and break parsing on the server.
     });
- 
-    // Parse the JSON response body regardless of HTTP status
-    const result = await response.json();
- 
-    if (!response.ok) {
-      // The server returned 4xx or 5xx with an { error: "..." } body
-      throw new Error(result.error || `Server returned ${response.status}`);
+
+    // ── Safe response parsing ─────────────────────────────────
+    // Read the body as plain text FIRST, then attempt JSON.parse().
+    //
+    // Why not response.json() directly?
+    // When Vercel cannot find or run your serverless function it returns
+    // an HTML error page, not JSON. Examples that start with "The page":
+    //   "The page could not be found."        (404 — wrong api/ path)
+    //   "The page is not responding."         (504 — function timed out)
+    //   "The page could not be displayed."    (500 — function crashed)
+    // response.json() then throws:
+    //   Unexpected token 'T', "The page c"... is not valid JSON
+    // which hides the real problem entirely.
+    //
+    // Reading as text first lets us:
+    //   1. Log the full raw body to the browser console for debugging.
+    //   2. Try JSON.parse() in a try/catch.
+    //   3. If parsing fails, show the HTTP status + a body preview as
+    //      the error message so the cause is immediately obvious.
+    const rawText = await response.text();
+
+    // Always log to the browser console so developers can see the full
+    // server response. Open DevTools → Console tab to read it.
+    console.log(
+      `[upload-avatar] HTTP ${response.status} ${response.statusText}`,
+      response.ok ? "(success)" : "(error)",
+      "\nRaw body:",
+      rawText.slice(0, 500),
+    );
+
+    // Attempt JSON.parse()
+    let result;
+    try {
+      result = JSON.parse(rawText);
+    } catch {
+      // Server returned non-JSON — almost always an HTML error page.
+      // Show the status code and body preview so the cause is clear.
+      const preview = rawText.slice(0, 200).replace(/\s+/g, " ").trim();
+      const hint = diagnoseUploadStatus(response.status);
+      throw new Error(
+        "Server returned HTTP " +
+          response.status +
+          " (not JSON). " +
+          hint +
+          ' | Response: "' +
+          preview +
+          '"',
+      );
     }
- 
+
+    // JSON parsed — check for an application-level error field
+    if (!response.ok) {
+      throw new Error(result.error || "Server error " + response.status + ".");
+    }
+
     // result.url is the public Vercel Blob HTTPS URL of the compressed image
     const blobUrl = result.url;
- 
+
     // Save the new URL to the profiles table in Supabase
     await savePictureUrl(blobUrl);
- 
+
     // Clear the file input so the same file is not accidentally re-uploaded
     document.getElementById("input-picture-file").value = "";
- 
   } catch (err) {
-    setStatus(`Error uploading image: ${err.message}`, true);
+    setStatus("Error uploading image: " + err.message, true);
   } finally {
     // Always hide the progress bar when done, whether success or error
     hideUploadProgress();
+  }
+}
+
+// diagnoseUploadStatus — returns a plain-English hint for common HTTP
+// status codes returned by the /api/upload-avatar route so developers
+// understand what to fix without opening the Vercel dashboard first.
+//
+// Called only when the server returns a non-JSON body, which always
+// means an infrastructure-level failure rather than an app-level one.
+function diagnoseUploadStatus(status) {
+  switch (status) {
+    case 401:
+    case 403:
+      return "Check that BLOB_READ_WRITE_TOKEN is set in Vercel project settings → Environment Variables.";
+    case 404:
+      return "api/upload-avatar.js was not found. Verify the file is in the /api folder at the repository root and has been deployed.";
+    case 405:
+      return "Wrong HTTP method. The function only accepts POST requests.";
+    case 413:
+      return "File too large. The Vercel function config sizeLimit is 10 MB.";
+    case 500:
+      return "The serverless function crashed. Check Vercel Dashboard → Functions → Logs for the full stack trace.";
+    case 504:
+      return "The serverless function timed out. The image may be too large or sharp took too long. Try a smaller file.";
+    default:
+      return "Check Vercel Dashboard → Functions → Logs for more details.";
   }
 }
  
